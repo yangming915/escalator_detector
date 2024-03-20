@@ -42,9 +42,9 @@ struct _nvof_output
 };
 typedef struct _threshold
 {
-    gfloat VarianceEscalatorStop;
-    gfloat SkewnessFalldown;
-    gfloat CSkewnessTotter;
+    gfloat VarianceEscalatorStop;//0.008
+    gfloat SkewnessFalldown;//-2.5
+    gfloat CSkewnessTotter;//SSkewness 趋于0不触发，但CSkewneww触发，-2.5
 }threshold;
 
 enum Exception
