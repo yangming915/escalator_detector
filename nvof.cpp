@@ -9,11 +9,11 @@
 #define PI 3.141592
 #define PI_IN_DEGREES 180
 #define ACTIVATION_TIME 20
-ActionPool Condition = {false,false,false,ACTIVATION_TIME,ACTIVATION_TIME,ACTIVATION_TIME};
-threshold TS = {0.008,-3.5,-3};
+ActionPool Condition = {false, false, false, ACTIVATION_TIME, ACTIVATION_TIME, ACTIVATION_TIME};
+threshold TS = {0.008, -3.5, -3};
 enum Exception E = NORM;
 enum Exception DsDirectionProcess(NvDsOpticalFlowMeta *flow_meta,
-                                      Param *param)
+                                  Param *param)
 {
   OpticalFlowOutput *out =
       (OpticalFlowOutput *)calloc(1, sizeof(OpticalFlowOutput));
@@ -56,75 +56,80 @@ enum Exception DsDirectionProcess(NvDsOpticalFlowMeta *flow_meta,
   out->CSkewness = Skewness(cs_flow, mean, sd, element_num);
   out->CKurtosis = Kurtosis(cs_flow, mean, sd, element_num);
 
-  if(out->SVariance<TS.VarianceEscalatorStop)
+  if (out->SVariance < TS.VarianceEscalatorStop)
   {
-    Condition.EStop=true;
-    Condition.EStopActivationTime=ACTIVATION_TIME;
+    Condition.EStop = true;
+    Condition.EStopActivationTime = ACTIVATION_TIME;
   }
-  else if (out->SVariance>=TS.VarianceEscalatorStop && Condition.EStopActivationTime >0)
+  else if (out->SVariance >= TS.VarianceEscalatorStop && Condition.EStopActivationTime > 0)
   {
     Condition.EStopActivationTime--;
   }
-  else if (out->SVariance>=TS.VarianceEscalatorStop && Condition.EStopActivationTime == 0)
+  else if (out->SVariance >= TS.VarianceEscalatorStop && Condition.EStopActivationTime == 0)
   {
     Condition.EStop = false;
-    Condition.EStopActivationTime=ACTIVATION_TIME;
+    Condition.EStopActivationTime = ACTIVATION_TIME;
   }
-  
+
   if (!Condition.EStop && out->SSkewness <= TS.SkewnessFalldown)
   {
-    Condition.Falldown =true;
-    Condition.FActivationTime=ACTIVATION_TIME;
+    Condition.Falldown = true;
+    Condition.FActivationTime = ACTIVATION_TIME;
   }
-  else if (!Condition.EStop && out->SSkewness > TS.SkewnessFalldown && Condition.FActivationTime >0 )
+  else if (!Condition.EStop && out->SSkewness > TS.SkewnessFalldown && Condition.FActivationTime > 0)
   {
     Condition.FActivationTime--;
   }
-  else if (!Condition.EStop && out->SSkewness > TS.SkewnessFalldown && Condition.FActivationTime ==0 )
+  else if (!Condition.EStop && out->SSkewness > TS.SkewnessFalldown && Condition.FActivationTime == 0)
   {
-    Condition.Falldown=false;
+    Condition.Falldown = false;
     Condition.FActivationTime = ACTIVATION_TIME;
   }
   else
   {
-    Condition.Falldown=false;
+    Condition.Falldown = false;
     Condition.FActivationTime = ACTIVATION_TIME;
   }
-  
-  if (!Condition.EStop && out->CSkewness <= TS.CSkewnessTotter)
+
+  if (!Condition.EStop && !Condition.Falldown 
+      && out->CSkewness <= TS.CSkewnessTotter && out->SSkewness > TS.CSkewnessTotter && out->SSkewness < 0)
   {
     Condition.Totter = true;
     Condition.TActivationTime = ACTIVATION_TIME;
   }
-  else if (!Condition.EStop && out->CSkewness > TS.CSkewnessTotter && Condition.TActivationTime>0)
+  else if (!Condition.EStop && out->CSkewness > TS.CSkewnessTotter && Condition.TActivationTime > 0)
   {
     Condition.TActivationTime--;
   }
-  else if (!Condition.EStop && out->CSkewness > TS.CSkewnessTotter && Condition.TActivationTime==0)
+  else if (!Condition.EStop && out->CSkewness > TS.CSkewnessTotter && Condition.TActivationTime == 0)
   {
-    Condition.Totter=false;
-    Condition.TActivationTime=ACTIVATION_TIME;
+    Condition.Totter = false;
+    Condition.TActivationTime = ACTIVATION_TIME;
   }
-  else 
+  else
   {
-    Condition.Totter=false;
-    Condition.TActivationTime=ACTIVATION_TIME;
+    Condition.Totter = false;
+    Condition.TActivationTime = ACTIVATION_TIME;
   }
 
-  if(Condition.EStop)E=ESCALATOR_STOP;
-  else if (!Condition.EStop&&Condition.Falldown)E=FALLDOWN;
-  else if (!Condition.EStop && !Condition.Falldown && Condition.Totter)E=TOTTER;
-  else E=NORM;
+  if (Condition.EStop)
+    E = ESCALATOR_STOP;
+  else if (!Condition.EStop && Condition.Falldown)
+    E = FALLDOWN;
+  else if (!Condition.EStop && !Condition.Falldown && Condition.Totter)
+    E = TOTTER;
+  else
+    E = NORM;
   if (E)
   {
     std::fstream Log;
     Log.open("log.txt", std::fstream::app);
-    Log << E <<" "<<flow_meta->frame_num<<" "<<std::fixed << flow_meta->frame_num / 25.0 
+    Log << E << " " << flow_meta->frame_num << " " << std::fixed << flow_meta->frame_num / 25.0
         << "  SV:" << out->SVariance << "  SS:" << out->SSkewness << "  SK:" << out->SKurtosis
         << "  CV:" << out->CVariance << "  CS:" << out->CSkewness << "  CK:" << out->CKurtosis << std::endl;
     Log.close();
   }
-  
+
   return E;
 }
 void *Normalize(FlowVector *flow, gfloat max_speed, guint element_num)
