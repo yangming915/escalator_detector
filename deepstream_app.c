@@ -478,7 +478,7 @@ process_meta (AppCtx * appCtx, NvDsBatchMeta * batch_meta)
       NvDsUserMeta *user_meta=(NvDsUserMeta *)l_user_meta->data;
       NvDsOpticalFlowMeta *flowmeta=(NvDsOpticalFlowMeta*)user_meta->user_meta_data;
       Param param = {15,{0.3,-0.9},0.2,0.0,3,{0,255,50,100}};
-      OpticalFlowOutput *out = DsDirectionProcess(flowmeta,&param);
+      enum Exception E = DsDirectionProcess(flowmeta,&param);
     }
     
     for (NvDsMetaList * l_obj = frame_meta->obj_meta_list; l_obj != NULL;

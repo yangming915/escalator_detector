@@ -46,16 +46,25 @@ typedef struct _threshold
     gfloat SkewnessFalldown;//-2.5
     gfloat CSkewnessTotter;//SSkewness 趋于0不触发，但CSkewneww触发，-2.5
 }threshold;
+typedef struct _Activation
+{
+    bool EStop;
+    bool Falldown;
+    bool Totter;
+    guint EStopActivationTime;
+    guint FActivationTime;
+    guint TActivationTime;
+}ActionPool;
 
 enum Exception
 {
-    FALLDOWN=1,Totter,ESCALATOR_STOP
+    ESCALATOR_STOP=-1,NORM,FALLDOWN,TOTTER
 };
 
 typedef struct _nvof_output OpticalFlowOutput;
 typedef struct _Param Param;
 
-OpticalFlowOutput *DsDirectionProcess (NvDsOpticalFlowMeta * flow_meta, Param *param);
+enum Exception DsDirectionProcess (NvDsOpticalFlowMeta * flow_meta, Param *param);
 
 void *Normalize(FlowVector *flow, gfloat max_speed, guint element_num);
 
