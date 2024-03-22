@@ -21,7 +21,7 @@ gpu-id=0
 #cudadec-memtype=0
 
 [source1]
-enable=0
+enable=1
 type=3
 uri=file://../video/fd/fd_231121.mp4
 num-sources=1
@@ -37,6 +37,14 @@ gpu-id=0
 #cudadec-memtype=0
 
 [source3]
+enable=0
+type=3
+uri=file://../video/fd/fd_231126.mp4
+num-sources=1
+gpu-id=0
+#cudadec-memtype=0
+
+[source4]
 enable=0
 type=3
 uri=file://../video/fd/fd_231126.mp4
@@ -68,8 +76,8 @@ nvbuf-memory-type=0
 
 [streammux]
 gpu-id=0
-live-source=0
-batch-size=1
+live-source=1
+batch-size=2
 batched-push-timeout=40000
 width=1920
 height=1080

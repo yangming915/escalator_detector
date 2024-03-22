@@ -1025,7 +1025,7 @@ create_common_elements (NvDsConfig * config, NvDsPipeline * pipeline,
   gboolean ret = FALSE;
   *sink_elem = *src_elem = NULL;
   /*create opticalflow element*/
-  if (config->of_visual_enable){
+  if (config->of_visual_enable && config->opticalflow_config.enable){
     pipeline->nvofvisual = gst_element_factory_make("nvofvisual","nvopticalflowvisual");
     if (!pipeline->nvofvisual){
       g_printerr ("nvofvisual element could not be created. Exiting.\n");

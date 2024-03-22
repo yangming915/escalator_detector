@@ -14,14 +14,14 @@ create_opticalflow_bin (NvDsOpticalFlowConfig * config, NvDsOpticalFlowBin * bin
     NVGSTDS_ERR_MSG_V ("Failed to create 'nvof_bin'");
     goto done;
   }
-
+  
   bin->queue = gst_element_factory_make (NVDS_ELEM_QUEUE, "nvof_queue");
   if (!bin->queue) {
     NVGSTDS_ERR_MSG_V ("Failed to create 'nvof_queue'");
     goto done;
   }
   gst_bin_add (GST_BIN (bin->bin), bin->queue);
-
+  
   bin->nvof = gst_element_factory_make("nvof","nvopticalflow");
   if (!bin->nvof)
   {
@@ -33,6 +33,7 @@ create_opticalflow_bin (NvDsOpticalFlowConfig * config, NvDsOpticalFlowBin * bin
   NVGSTDS_LINK_ELEMENT (bin->queue, bin->nvof);
 
   NVGSTDS_BIN_ADD_GHOST_PAD (bin->bin, bin->queue, "sink");
+  //NVGSTDS_BIN_ADD_GHOST_PAD (bin->bin, bin->nvof, "sink");
   NVGSTDS_BIN_ADD_GHOST_PAD (bin->bin, bin->nvof, "src");
 
   g_object_set (G_OBJECT (bin->nvof),

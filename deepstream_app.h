@@ -52,7 +52,7 @@ extern "C"
 #include "deepstream_opticalflow.h"
 #include "gst-nvcustommessage.h"
 #include "gst-nvcommonconfig.h"
-#include "nvof.h"
+#include "opticalflow_analytics.h"
 
 typedef struct _AppCtx AppCtx;
 
